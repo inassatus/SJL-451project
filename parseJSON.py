@@ -1,7 +1,19 @@
 import json
+import types
 
 def cleanStr4SQL(s):
     return s.replace("'","`").replace("\n"," ")
+
+def recursiveRemoval(s):
+	final = []
+	for k in s:
+		if type(s[k]) is dict:
+			final.append(recursiveRemoval(s[k]))
+		else:
+			final.append(s[k])
+		
+	return final
+		
 
 def parseBusinessData():
     #read the JSON file
@@ -24,9 +36,9 @@ def parseBusinessData():
             outfile.write(str(data['review_count'])+'\t') #reviewcount
             outfile.write(str(data['is_open'])+'\t') #openstatus
             outfile.write(str([item for item in  data['categories']])+'\t') #category list
-            outfile.write(str([])) # write your own code to process attributes
-            outfile.write(str([])) # write your own code to process hours
-            outfile.write('\n');
+            outfile.write(str(recursiveRemoval(data['attributes']))+'\t') #attributes
+            outfile.write(str(recursiveRemoval(data['hours']))) #hours
+            outfile.write('\n')
 
             line = f.readline()
             count_line +=1
