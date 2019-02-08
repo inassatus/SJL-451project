@@ -34,7 +34,7 @@ namespace Milestone1
         }
         private string buildConnString()
         {
-            return "Host-localhost; Usersname = postgres; Password = 252100; Database = milestone1db";
+            return "Host=localhost; Username=postgres; Password=password; Database=milestone1db";
 
         }
 
@@ -69,20 +69,33 @@ namespace Milestone1
 
             DataGridTextColumn col2 = new DataGridTextColumn();
             col2.Header = "State";
-            col1.Binding = new Binding("state");
+            col2.Binding = new Binding("state");
             businessGrid.Columns.Add(col2);
-
-
-            businessGrid.Items.Add(new Business() { name = "business1", state = "WA" });
-            businessGrid.Items.Add(new Business() { name = "business2", state = "CA" });
-            businessGrid.Items.Add(new Business() { name = "business3", state = "WA" });
-
-
-
-
-
-
         }
 
+        private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            businessGrid.Items.Clear();
+            if (stateList.SelectedIndex > -1)
+            {
+                using (var comm = new NpgsqlConnection(buildConnString()))
+                {
+                    comm.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = comm;
+                        cmd.CommandText = "SELECT name,state FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "';";
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1) });
+                            }
+                        }
+                    }
+                    comm.Close();
+                }
+            }
+        }
     }
 }
