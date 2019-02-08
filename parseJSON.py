@@ -4,16 +4,30 @@ import types
 def cleanStr4SQL(s):
     return s.replace("'","`").replace("\n"," ")
 
-def recursiveRemoval(s):
-	final = []
+def attributes(s):
+	attr = ""
 	for k in s:
 		if type(s[k]) is dict:
-			final.append(recursiveRemoval(s[k]))
+			attr += (attributes(s[k]))
 		else:
-			final.append(s[k])
-		
-	return final
-		
+			attr += str((k,s[k]))
+	attr.replace("'", "")
+	return attr
+	
+def hours(s):
+	hrs = ""
+	for k in s:
+		hrs += str((k,s[k]))
+	return hrs.replace("-", ",")
+
+def time(s):
+	tm = ""
+	for k in s:
+		tm += k + ":"
+		for v in s[k]:
+			tm += str((v,s[k][v])) + ","
+		tm += "\t"
+	return tm.replace("'","").replace(", ","-")
 
 def parseBusinessData():
     #read the JSON file
@@ -36,8 +50,8 @@ def parseBusinessData():
             outfile.write(str(data['review_count'])+'\t') #reviewcount
             outfile.write(str(data['is_open'])+'\t') #openstatus
             outfile.write(str([item for item in  data['categories']])+'\t') #category list
-            outfile.write(str(recursiveRemoval(data['attributes']))+'\t') #attributes
-            outfile.write(str(recursiveRemoval(data['hours']))) #hours
+            outfile.write('['+attributes(data['attributes'])+']\t') #attributes
+            outfile.write('['+hours(data['hours'])+']\t') #hours
             outfile.write('\n')
 
             line = f.readline()
@@ -84,7 +98,7 @@ def parseCheckinData():
         #read each JSON abject and extract data
         while line:
             data = json.loads(line)
-            outfile.write(str(recursiveRemoval(data['time']))+'\t') #time
+            outfile.write(time(data['time'])+'\t') #time
             outfile.write(cleanStr4SQL(data['business_id'])+'\t') #business id
             outfile.write('\n')
 
@@ -122,7 +136,7 @@ def parseReviewData():
     outfile.close()
     f.close()
 
-#parseBusinessData()
-#parseUserData()
-#parseCheckinData()
+parseBusinessData()
+parseUserData()
+parseCheckinData()
 parseReviewData()
