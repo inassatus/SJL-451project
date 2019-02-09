@@ -30,11 +30,12 @@ namespace Milestone1
         {
             InitializeComponent();
             addStates();
+            //addCities();
             addColums2Grid();
         }
         private string buildConnString()
         {
-            return "Host=localhost; Username=postgres; Password=password; Database=milestone1db";
+            return "Host=localhost; Username=postgres; Password=252100; Database=milestone1db";  
 
         }
 
@@ -58,6 +59,26 @@ namespace Milestone1
                 comm.Close();
             }
         }
+        public void addCities()
+        {
+            using (var comm = new NpgsqlConnection(buildConnString()))
+            {
+                comm.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = comm;
+                    cmd.CommandText = "SELECT DISTINCT city FROM business WHERE state = " + stateList.SelectedItem.ToString() + "ORDER BY city;";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            cityList.Items.Add(reader.GetString(0));
+                        }
+                    }
+                }
+                comm.Close();
+            }
+        }
 
         public void addColums2Grid()
         {
@@ -71,6 +92,11 @@ namespace Milestone1
             col2.Header = "State";
             col2.Binding = new Binding("state");
             businessGrid.Columns.Add(col2);
+
+            DataGridTextColumn col3 = new DataGridTextColumn();
+            col3.Header = "City";
+            col3.Binding = new Binding("city");
+            businessGrid.Columns.Add(col3);
         }
 
         private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e)

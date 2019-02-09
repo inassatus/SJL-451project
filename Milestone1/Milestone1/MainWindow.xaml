@@ -3,8 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Milestone1" Height="525" Width="525">
     <Grid>
-        <ComboBox x:Name="stateList" HorizontalAlignment="Left" Height="38" Margin="212,29,0,0" VerticalAlignment="Top" Width="246" FontSize="14" SelectionChanged="StateList_SelectionChanged"/>
-        <DataGrid x:Name="businessGrid" HorizontalAlignment="Left" Height="329" Margin="111,92,0,0" VerticalAlignment="Top" Width="384"/>
-        <Label Content="States" HorizontalAlignment="Left" Height="38" Margin="77,29,0,0" VerticalAlignment="Top" Width="75" FontSize="14"/>
+        <ComboBox x:Name="stateList" HorizontalAlignment="Left" Height="38" Margin="121,10,0,0" VerticalAlignment="Top" Width="246" FontSize="14"/>
+        <DataGrid x:Name="businessGrid" HorizontalAlignment="Left" Height="329" Margin="66,145,0,0" VerticalAlignment="Top" Width="384"/>
+        <Label Content="States" HorizontalAlignment="Left" Height="38" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" FontSize="14"/>
+        <Label Content="Cities" HorizontalAlignment="Left" Height="40" Margin="10,74,0,0" VerticalAlignment="Top" Width="75" FontSize="14"/>
+        <ComboBox x:Name="cityList" HorizontalAlignment="Left" Height="40" Margin="121,74,0,0" VerticalAlignment="Top" Width="246"/>
     </Grid>
 </Window>
