@@ -25,18 +25,18 @@ namespace Milestone1
         {
             public string name { get; set; }
             public string state { get; set; }
+            public string city { get; set; }
         }
         public MainWindow()
         {
             InitializeComponent();
             addStates();
-            //addCities();
+            // addCities();
             addColums2Grid();
         }
         private string buildConnString()
         {
-            return "Host=localhost; Username=postgres; Password=252100; Database=milestone1db";  
-
+            return "Host=localhost; Username=postgres; Password=252100; Database=milestone1db";
         }
 
         public void addStates()
@@ -61,13 +61,15 @@ namespace Milestone1
         }
         public void addCities()
         {
+            cityList.Items.Clear();
             using (var comm = new NpgsqlConnection(buildConnString()))
             {
                 comm.Open();
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = comm;
-                    cmd.CommandText = "SELECT DISTINCT city FROM business WHERE state = " + stateList.SelectedItem.ToString() + "ORDER BY city;";
+
+                    cmd.CommandText = "SELECT DISTINCT city FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "';";
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -97,6 +99,8 @@ namespace Milestone1
             col3.Header = "City";
             col3.Binding = new Binding("city");
             businessGrid.Columns.Add(col3);
+
+
         }
 
         private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -110,18 +114,50 @@ namespace Milestone1
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = comm;
-                        cmd.CommandText = "SELECT name,state FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "';";
+                        cmd.CommandText = "SELECT * FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "' ;";
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1) });
+                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1), city = reader.GetString(2) });
                             }
                         }
                     }
                     comm.Close();
+
                 }
+                addCities();
             }
+        }
+
+        private void cityList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            businessGrid.Items.Clear();
+            if (cityList.SelectedIndex > -1)
+            {
+                using (var comm = new NpgsqlConnection(buildConnString()))
+                {
+                    comm.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = comm;
+                        stateList.SelectedItem.ToString();
+                        cityList.SelectedItem.ToString();
+                        cmd.CommandText = "SELECT * FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "' AND city = '" + cityList.SelectedItem.ToString() + "' ;";
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1), city = reader.GetString(2) });
+                            }
+                        }
+                    }
+                    comm.Close();
+
+                }
+                
+            }
+
         }
     }
 }
